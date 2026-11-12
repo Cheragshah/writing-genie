@@ -266,6 +266,9 @@
               <span><i class="sw sw-copy"></i>matched source</span>
             </div>
           </div>
+          <div class="large-note hidden" id="heatmapNote">
+            Sentence heatmap is disabled above 1.2 million characters to keep the report inside serverless response limits. Overall scores, signals and source matches are still calculated for the whole document.
+          </div>
           <div class="insight hidden" id="insight" aria-live="polite"></div>
           <div class="text-view" id="textView"></div>
           <div class="render-more hidden" id="renderMore">
@@ -416,7 +419,7 @@
         </details>
         <details>
           <summary>Is there still a document size limit?</summary>
-          <p>Up to 1,000,000 characters and 25 MB per file on the hosted demo (12 MB locally). Large files upload directly to Vercel Blob, so the usual 4 MB serverless request limit does not apply. Documents beyond 60,000 characters are processed in parts automatically.</p>
+          <p>Up to 3,000,000 characters and 25 MB per file on the hosted demo (12 MB locally). Large files upload directly to Vercel Blob, so the usual 4 MB serverless request limit does not apply. Documents beyond 60,000 characters are processed in parts automatically; above 1.2 million characters the sentence heatmap is skipped to stay inside serverless response limits.</p>
         </details>
       </div>
     </section>

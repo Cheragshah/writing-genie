@@ -27,7 +27,8 @@ const IS_VERCEL = Boolean(process.env.VERCEL);
 const BLOB_ENABLED = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 const SINGLE_PASS_CHARS = 60000;
 const CHUNK_CHARS = 58000;
-const MAX_DOC_CHARS = 1000000;
+const MAX_DOC_CHARS = 3000000;
+const SUMMARY_ONLY_CHARS = 1200000;
 const MAX_DIRECT_CHARS = IS_VERCEL ? MAX_DOC_CHARS : SINGLE_PASS_CHARS;
 const MAX_DIRECT_UPLOAD_MB = IS_VERCEL ? 4 : 12;
 const MAX_UPLOAD_MB = IS_VERCEL ? (BLOB_ENABLED ? 25 : 4) : 12;
@@ -305,7 +306,8 @@ function mergeAIScores(parts, fullText) {
     summary: summary.join(' '),
     signals,
     phrases,
-    sentences: sentenceScores,
+    sentences: fullText.length > SUMMARY_ONLY_CHARS ? [] : sentenceScores,
+    heatmapLimited: fullText.length > SUMMARY_ONLY_CHARS,
     stats,
   };
 }

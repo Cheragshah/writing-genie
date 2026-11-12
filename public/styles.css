@@ -993,6 +993,17 @@ main, .nav, .footer { position: relative; z-index: 1; }
   align-items: flex-start;
 }
 
+.large-note {
+  background: #fbf5e9;
+  border: 1px solid rgba(226, 160, 46, 0.28);
+  border-radius: 11px;
+  padding: 10px 13px;
+  margin-bottom: 12px;
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: #7a5a1d;
+}
+
 .insight strong { color: var(--ink); }
 
 .insight .insight-mark {
@@ -1371,6 +1382,15 @@ main, .nav, .footer { position: relative; z-index: 1; }
   border-left: 2px solid rgba(106, 75, 255, 0.3);
   font-style: italic;
   color: #5b536b;
+}
+
+.output.formatted .preview-limit {
+  margin-top: 24px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line-strong);
+  font-family: var(--sans);
+  font-size: 11.5px;
+  color: var(--muted);
 }
 
 .changes { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }

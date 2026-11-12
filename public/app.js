@@ -977,6 +977,14 @@ function renderReport(data) {
   $('#textView').innerHTML = '';
   renderTextView(data);
 
+  const heatmapNote = $('#heatmapNote');
+  if (heatmapNote) {
+    heatmapNote.classList.toggle(
+      'hidden',
+      !(data.ai.heatmapLimited || data.text.length > 1200000)
+    );
+  }
+
   const signals = $('#aiSignals');
   signals.innerHTML = '';
   for (const signal of ai.signals) {
@@ -1087,30 +1095,43 @@ function renderCleanedPreview(result) {
   const stripMarker = (text) =>
     text.replace(/^[•\-*–]\s+/, '').replace(/^>\s?/, '');
 
+  const isHuge = result.text.length > 300000;
+  const visibleBlocks = [];
+  let visibleChars = 0;
+  for (const block of blocks) {
+    if (isHuge && visibleChars + block.text.length > 300000) break;
+    visibleBlocks.push(block);
+    visibleChars += block.text.length;
+  }
+
   output.classList.add('formatted');
-  output.innerHTML = blocks
-    .map((block) => {
-      const text = escapeHtml(stripMarker(block.text));
-      switch (block.type) {
-        case 'title':
-          return `<h3 class="preview-title">${text}</h3>`;
-        case 'subtitle':
-          return `<p class="preview-subtitle">${text}</p>`;
-        case 'h1':
-          return `<h4 class="preview-h1">${text}</h4>`;
-        case 'h2':
-          return `<h5 class="preview-h2">${text}</h5>`;
-        case 'h3':
-          return `<h6 class="preview-h3">${text}</h6>`;
-        case 'li':
-          return `<div class="preview-li">${text}</div>`;
-        case 'quote':
-          return `<blockquote class="preview-quote">${text}</blockquote>`;
-        default:
-          return `<p>${text}</p>`;
-      }
-    })
-    .join('');
+  output.innerHTML =
+    visibleBlocks
+      .map((block) => {
+        const text = escapeHtml(stripMarker(block.text));
+        switch (block.type) {
+          case 'title':
+            return `<h3 class="preview-title">${text}</h3>`;
+          case 'subtitle':
+            return `<p class="preview-subtitle">${text}</p>`;
+          case 'h1':
+            return `<h4 class="preview-h1">${text}</h4>`;
+          case 'h2':
+            return `<h5 class="preview-h2">${text}</h5>`;
+          case 'h3':
+            return `<h6 class="preview-h3">${text}</h6>`;
+          case 'li':
+            return `<div class="preview-li">${text}</div>`;
+          case 'quote':
+            return `<blockquote class="preview-quote">${text}</blockquote>`;
+          default:
+            return `<p>${text}</p>`;
+        }
+      })
+      .join('') +
+    (isHuge
+      ? '<p class="preview-limit">Preview limited to the first 300,000 characters. Use Copy or Download for the full cleaned document.</p>'
+      : '');
 }
 
 function renderCleaned(before, result) {
@@ -1302,6 +1323,7 @@ function resetAll() {
   el.results.classList.add('hidden');
   el.cleaned.classList.add('hidden');
   $('#insight').classList.add('hidden');
+  $('#heatmapNote').classList.add('hidden');
   $('#renderMore').classList.add('hidden');
   $('#textView').innerHTML = '';
   setMode('upload');

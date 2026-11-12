@@ -68,7 +68,7 @@ git push
 
 | | Local | Vercel |
 |---|---|---|
-| Document size | 1,000,000 chars | 1,000,000 chars |
+| Document size | 3,000,000 chars | 3,000,000 chars |
 | Upload size | 12 MB | 25 MB via Vercel Blob |
 | Long documents | Background jobs with live per-part progress | Synchronous chunked processing |
 | PDF extraction | Pure JS (`unpdf`) | Pure JS (`unpdf`) |
@@ -176,6 +176,7 @@ This runs syntax checks across the server and library modules.
 - AI detectors disagree with each other and produce false positives. Writing Genie estimates style; it cannot guarantee any particular detector result.
 - The reference scan covers public sources only; a full web index needs a commercial plagiarism API.
 - Hosted uploads over 4 MB use Vercel Blob, so the deployment needs a connected Blob store. Without one, the hosted limit falls back to 4 MB.
+- Above 1.2 million characters the sentence heatmap is disabled so the JSON report stays under Vercel's response limit. Scores, signals, source matches and clean-up still run on the whole document.
 - Public APIs occasionally rate-limit. The app falls back to the offline quotation/repetition scan.
 - Direct quotations are intentionally preserved during clean-up. Cite them.
 - Complex layouts (multiple columns, tables, images, custom fonts) are not reproduced in the formatted exports.
