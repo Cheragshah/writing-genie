@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Writing Genie — Human-sounding writing, checked twice</title>
+  <meta name="description" content="Upload a Word file, PDF, or plain text. Writing Genie checks for AI-sounding prose and copied passages, then cleans up the weak spots in one click." />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="page-glow" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="nav">
+    <a class="brand" href="#top" aria-label="Writing Genie home">
+      <span class="brand-mark">
+        <svg viewBox="0 0 48 48" role="img" aria-hidden="true">
+          <defs>
+            <linearGradient id="lampGold" x1="6" y1="8" x2="40" y2="42" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#FFD37A" />
+              <stop offset=".55" stop-color="#F3A93B" />
+              <stop offset="1" stop-color="#D97B18" />
+            </linearGradient>
+          </defs>
+          <path d="M31.5 27.5c4.8-.8 8.5 1.2 8.5 4.2 0 2.6-2.7 4.4-6.2 4.4h-2.2" fill="none" stroke="url(#lampGold)" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M7.5 28.8c0-4.4 4.7-7.6 12.2-7.6h6.9c7.1 0 12 3.2 12 7.6 0 3.2-2 5.4-4.7 6.4l-1.3 3.8H13.2l-1.3-3.8c-2.7-1-4.4-3.2-4.4-6.4Z" fill="url(#lampGold)"/>
+          <path d="M18.5 21.2c.2-3.3 2.2-5.4 5.4-5.4 3 0 5 2 5.2 5.2" fill="none" stroke="url(#lampGold)" stroke-width="2.6" stroke-linecap="round"/>
+          <circle cx="34.6" cy="13.4" r="1.7" fill="#7A5CFF"/>
+          <path d="M39.6 8.2v5.4M36.9 10.9h5.4" stroke="#7A5CFF" stroke-width="1.7" stroke-linecap="round"/>
+          <path d="M10.8 15.6v3.6M9 17.4h3.6" stroke="#F3A93B" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="brand-text">Writing <em>Genie</em></span>
+    </a>
+
+    <nav class="nav-links" aria-label="Main">
+      <a href="#how">How it works</a>
+      <a href="#checks">What it checks</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+
+    <a class="btn btn-ink btn-sm" href="#app">Open the lamp</a>
+  </header>
+
+  <main id="top">
+    <section class="hero" id="app">
+      <div class="hero-copy">
+        <div class="pill">
+          <span class="pill-dot" aria-hidden="true"></span>
+          Plagiarism + AI detection, in one pass
+        </div>
+        <h1>Make every word<br /><em>sound like you.</em></h1>
+        <p class="lede">
+          Drop in a draft. Writing Genie finds copied passages and machine-sounding prose,
+          explains what gave it away, then rewrites the weak spots without losing your point.
+        </p>
+        <ul class="hero-points">
+          <li>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10.5 4 4 8-9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Word, PDF, and plain text
+          </li>
+          <li>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10.5 4 4 8-9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Sentence-level explanations
+          </li>
+          <li>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10.5 4 4 8-9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            One-click clean-up
+          </li>
+        </ul>
+      </div>
+
+      <div class="upload-card" id="uploadCard">
+        <div class="upload-glow" aria-hidden="true"></div>
+        <div class="tabs" role="tablist" aria-label="Input method">
+          <button class="tab is-active" id="tabUpload" role="tab" aria-selected="true" aria-controls="uploadPane" data-tab="upload">
+            Upload a file
+          </button>
+          <button class="tab" id="tabPaste" role="tab" aria-selected="false" aria-controls="pastePane" data-tab="paste">
+            Paste text
+          </button>
+        </div>
+
+        <div id="uploadPane" role="tabpanel" aria-labelledby="tabUpload">
+          <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload a document">
+            <input type="file" id="fileInput" accept=".docx,.pdf,.txt,.md,.rtf" hidden />
+            <div class="dropzone-icon" aria-hidden="true">
+              <svg viewBox="0 0 52 52">
+                <path d="M14 8h16l8 8v28H14z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                <path d="M30 8v9h9" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                <path d="M26 38V25m0 0-5 5m5-5 5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <p class="dropzone-title">Drop your draft right here</p>
+            <p class="dropzone-sub">or <span class="link-like">browse your files</span></p>
+            <p class="dropzone-meta">DOCX · PDF · TXT — LONG DOCS PROCESSED IN PARTS</p>
+            <div class="file-chip hidden" id="fileChip">
+              <span class="file-chip-icon" aria-hidden="true">◆</span>
+              <span class="file-chip-name" id="fileName"></span>
+              <span class="file-chip-size" id="fileSize"></span>
+              <button class="file-chip-x" id="removeFile" aria-label="Remove file">×</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="pastePane" role="tabpanel" aria-labelledby="tabPaste" hidden>
+          <div class="paste-wrap">
+            <textarea id="pasteText" placeholder="Paste your essay, report, or article here. A few paragraphs is plenty…" spellcheck="false"></textarea>
+            <div class="paste-meta">
+              <span id="pasteCount">0 words</span>
+              <button class="text-btn" id="clearPaste" type="button">Clear</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="upload-actions">
+          <button class="btn btn-primary btn-block" id="checkBtn">
+            <span id="checkBtnLabel">Check my writing</span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m0 0-4.5-4.5M15 10l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-block" id="sampleBtn" type="button">Try a sample draft</button>
+        </div>
+        <p class="micro">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.2" y="7" width="9.6" height="6.4" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.4 7V5.4a2.6 2.6 0 0 1 5.2 0V7" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+          Your draft is processed locally. No account needed.
+        </p>
+      </div>
+
+      <span class="spark spark-a" aria-hidden="true"></span>
+      <span class="spark spark-b" aria-hidden="true"></span>
+      <span class="spark spark-c" aria-hidden="true"></span>
+    </section>
+
+    <section class="how" id="how">
+      <div class="section-head">
+        <span class="eyebrow">Three wishes, basically</span>
+        <h2>Read it. Understand it. Fix it.</h2>
+      </div>
+      <div class="steps">
+        <article class="step">
+          <span class="step-num">01</span>
+          <h3>Drop in your draft</h3>
+          <p>Upload a Word file or PDF, or paste the text. Genie pulls out the words — layout, fonts and footers stay out of the way.</p>
+        </article>
+        <article class="step">
+          <span class="step-num">02</span>
+          <h3>See what stands out</h3>
+          <p>Two scores, sentence-by-sentence heatmaps, and the exact phrases that made a detector raise an eyebrow.</p>
+        </article>
+        <article class="step">
+          <span class="step-num">03</span>
+          <h3>Let it clean up</h3>
+          <p>One click rewrites the flagged bits: stock phrases gone, rhythm loosened, copied passages paraphrased. Then it checks again.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="checks" id="checks">
+      <div class="checks-copy">
+        <span class="eyebrow">What's under the lamp</span>
+        <h2>Two different questions. Two honest answers.</h2>
+        <p>
+          AI detectors look at <em>style</em>. Plagiarism checks look at <em>source overlap</em>.
+          Writing Genie keeps them separate, so you know which problem you actually have.
+        </p>
+      </div>
+      <div class="check-cards">
+        <article class="check-card">
+          <div class="check-icon violet" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1m0-12.8-2.1 2.1M7.7 16.3l-2.1 2.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          </div>
+          <h3>AI-style analysis</h3>
+          <p>Measures phrasing, sentence rhythm, transitions, contractions, punctuation habits and formulaic patterns — then explains the signal in plain English.</p>
+          <span class="check-tag">Heuristic · explainable</span>
+        </article>
+        <article class="check-card">
+          <div class="check-icon gold" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m15.5 15.5 5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Source overlap</h3>
+          <p>Compares your sentences against Wikipedia, OpenAlex academic abstracts, and a library of well-known quotations. Matching spans are linked to their source.</p>
+          <span class="check-tag">Public reference scan</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="results hidden" id="results" aria-live="polite">
+      <div class="results-head">
+        <div>
+          <span class="eyebrow">The reading</span>
+          <h2>Here's what Genie found.</h2>
+        </div>
+        <button class="btn btn-ghost btn-sm" id="newDocBtn" type="button">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          New document
+        </button>
+      </div>
+
+      <div class="docbar">
+        <div class="docbar-name">
+          <span class="doc-dot" aria-hidden="true"></span>
+          <span id="docName">Your document</span>
+        </div>
+        <div class="docbar-meta" id="docMeta"></div>
+      </div>
+
+      <div class="score-grid">
+        <article class="score-card">
+          <div class="score-top">
+            <div>
+              <span class="score-kicker">AI likelihood</span>
+              <h3 id="aiVerdict">—</h3>
+            </div>
+            <span class="confidence" id="aiConfidence">—</span>
+          </div>
+          <div class="score-body">
+            <div class="gauge" id="aiGauge" data-score="0">
+              <svg viewBox="0 0 140 140" aria-hidden="true">
+                <circle class="gauge-track" cx="70" cy="70" r="58"/>
+                <circle class="gauge-fill" cx="70" cy="70" r="58"/>
+              </svg>
+              <div class="gauge-value"><span id="aiScore">0</span><small>%</small></div>
+            </div>
+            <p class="score-summary" id="aiSummary"></p>
+          </div>
+          <div class="score-foot" id="aiFootnote"></div>
+        </article>
+
+        <article class="score-card">
+          <div class="score-top">
+            <div>
+              <span class="score-kicker">Source overlap</span>
+              <h3 id="plagVerdict">—</h3>
+            </div>
+            <span class="confidence" id="plagConfidence">—</span>
+          </div>
+          <div class="score-body">
+            <div class="gauge" id="plagGauge" data-score="0">
+              <svg viewBox="0 0 140 140" aria-hidden="true">
+                <circle class="gauge-track" cx="70" cy="70" r="58"/>
+                <circle class="gauge-fill" cx="70" cy="70" r="58"/>
+              </svg>
+              <div class="gauge-value"><span id="plagScore">0</span><small>%</small></div>
+            </div>
+            <p class="score-summary" id="plagSummary"></p>
+          </div>
+          <div class="score-foot" id="plagFootnote"></div>
+        </article>
+      </div>
+
+      <div class="report-grid">
+        <article class="panel panel-text">
+          <div class="panel-head">
+            <div>
+              <h3>Line by line</h3>
+              <p class="panel-sub">Click any highlighted sentence to see why it was flagged.</p>
+            </div>
+            <div class="legend">
+              <span><i class="sw sw-low"></i>human</span>
+              <span><i class="sw sw-mid"></i>mixed</span>
+              <span><i class="sw sw-high"></i>AI-leaning</span>
+              <span><i class="sw sw-copy"></i>matched source</span>
+            </div>
+          </div>
+          <div class="insight hidden" id="insight" aria-live="polite"></div>
+          <div class="text-view" id="textView"></div>
+          <div class="render-more hidden" id="renderMore">
+            <span id="renderMoreText">Large document — showing the first part of the text.</span>
+            <button class="btn btn-ghost btn-sm" id="showFullTextBtn" type="button">Show the whole document</button>
+          </div>
+          <div class="signals-block">
+            <h4>What shaped the AI score</h4>
+            <div class="signals" id="aiSignals"></div>
+          </div>
+        </article>
+
+        <aside class="side">
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <h3>Source matches</h3>
+                <p class="panel-sub" id="matchCount">No matches yet</p>
+              </div>
+            </div>
+            <div class="match-list" id="matchList"></div>
+            <div class="notes" id="plagNotes"></div>
+          </article>
+
+          <article class="panel">
+            <h3 class="tight">At a glance</h3>
+            <dl class="stats" id="stats"></dl>
+          </article>
+        </aside>
+      </div>
+
+      <div class="cleanup" id="cleanup">
+        <div class="cleanup-copy">
+          <span class="eyebrow">The last wish</span>
+          <h2>Let Genie tidy it up.</h2>
+          <p>
+            Swaps stock phrasing, adds a more natural rhythm, and paraphrases matched passages.
+            Your meaning stays; the tells go. You'll get a fresh score to see what changed.
+          </p>
+          <div class="cleanup-tags">
+            <span>Stock phrases removed</span>
+            <span>Rhythm varied</span>
+            <span>Matches paraphrased</span>
+            <span>Re-checked after</span>
+            <span>Word &amp; PDF export</span>
+          </div>
+        </div>
+        <button class="btn btn-magic" id="cleanBtn" type="button">
+          <span class="magic-spark" aria-hidden="true">✦</span>
+          Clean my writing
+        </button>
+      </div>
+      <p class="cleanup-note">
+        Writing Genie rewrites style, not facts. Always read the result before submitting — detectors disagree,
+        and your name goes on the work. For direct quotes, cite the source instead of paraphrasing.
+      </p>
+    </section>
+
+    <section class="after hidden" id="cleaned" aria-live="polite">
+      <div class="after-head">
+        <span class="eyebrow">Fresh from the lamp</span>
+        <h2>Cleaned up and re-checked.</h2>
+        <p>Same argument, fewer tells. Here's the before and after.</p>
+      </div>
+
+      <div class="compare">
+        <div class="compare-card">
+          <span class="compare-label">AI likelihood</span>
+          <div class="compare-row">
+            <div class="compare-num" id="aiBefore">—</div>
+            <div class="compare-track"><span class="compare-fill before" id="aiBeforeBar"></span></div>
+            <span class="compare-arrow" aria-hidden="true">→</span>
+            <div class="compare-num good" id="aiAfter">—</div>
+          </div>
+          <span class="compare-foot" id="aiDelta"></span>
+        </div>
+        <div class="compare-card">
+          <span class="compare-label">Source overlap</span>
+          <div class="compare-row">
+            <div class="compare-num" id="plagBefore">—</div>
+            <div class="compare-track"><span class="compare-fill before" id="plagBeforeBar"></span></div>
+            <span class="compare-arrow" aria-hidden="true">→</span>
+            <div class="compare-num good" id="plagAfter">—</div>
+          </div>
+          <span class="compare-foot" id="plagDelta"></span>
+        </div>
+      </div>
+
+      <div class="after-grid">
+        <article class="panel cleaned-panel">
+          <div class="panel-head">
+            <h3>The cleaned version</h3>
+            <div class="output-actions">
+              <button class="btn btn-ghost btn-sm" id="copyBtn" type="button">Copy</button>
+              <button class="btn btn-ink btn-sm" id="downloadDocxBtn" type="button">Download .docx</button>
+              <button class="btn btn-ghost btn-sm" id="downloadPdfBtn" type="button">Download .pdf</button>
+              <button class="btn btn-ghost btn-sm" id="downloadBtn" type="button">TXT</button>
+            </div>
+          </div>
+          <div class="output" id="outputText"></div>
+          <p class="export-note">
+            Your title, subtitle, heading levels, bullets and quotations are rebuilt into the downloaded file.
+          </p>
+        </article>
+        <aside class="after-side">
+          <article class="panel">
+            <h3 class="tight">What changed</h3>
+            <ul class="changes" id="changes"></ul>
+          </article>
+          <article class="panel">
+            <h3 class="tight">Still worth a look</h3>
+            <ul class="review-list" id="reviewList"></ul>
+          </article>
+          <button class="btn btn-ghost btn-block" id="startOverBtn" type="button">Start a new draft</button>
+        </aside>
+      </div>
+    </section>
+
+    <section class="faq" id="faq">
+      <div class="section-head">
+        <span class="eyebrow">Fair questions</span>
+        <h2>The honest fine print.</h2>
+      </div>
+      <div class="faq-grid">
+        <details>
+          <summary>Can this guarantee I'll pass an AI detector?</summary>
+          <p>No — and nobody honestly can. Detectors are inconsistent and produce false positives on human writing all the time. Writing Genie reduces the stylistic patterns those tools tend to flag and shows you the reasoning, so you can make the final call.</p>
+        </details>
+        <details>
+          <summary>Does it search the whole internet for plagiarism?</summary>
+          <p>Not the whole web. It checks Wikipedia, OpenAlex academic abstracts, and a curated quotation library, plus repeated passages inside your own document. A complete web index requires a paid service like Copyleaks or Turnitin.</p>
+        </details>
+        <details>
+          <summary>Where does my document go?</summary>
+          <p>Into a local Node server on this machine, which extracts the text and runs the analysis. Nothing is stored. Only short quoted phrases are sent to the public Wikipedia and OpenAlex APIs for source matching.</p>
+        </details>
+        <details>
+          <summary>Will the clean-up change my meaning?</summary>
+          <p>It swaps words and reshapes sentences, so small changes in tone are possible. Read the result. If a passage is a direct quote, cite it — don't paraphrase it into something the original author didn't say.</p>
+        </details>
+        <details>
+          <summary>What file types work?</summary>
+          <p>Word documents (.docx), PDFs with selectable text, plain text and Markdown. Scanned PDFs need OCR first. Legacy .doc files should be re-saved as .docx. Long documents are split into roughly 60,000-character parts automatically, processed one after another with a progress indicator, and merged into one final report.</p>
+        </details>
+        <details>
+          <summary>Do the downloads keep my formatting?</summary>
+          <p>Yes. The cleaned draft can be downloaded as DOCX or PDF with a styled title, subtitle, Heading 1–3 levels, bullet lists and quotations. Word documents use real heading styles, so the navigation pane works. Structure is taken from uploaded Word headings where possible and inferred from the text otherwise.</p>
+        </details>
+        <details>
+          <summary>Is there still a document size limit?</summary>
+          <p>Locally: 1,000,000 characters and 12 MB per file. On the hosted Vercel demo: 300,000 characters and 4 MB per file, so processing stays inside serverless request limits. Everything beyond the first 60,000 characters goes through the chunked pipeline automatically.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-brand">
+      <span class="brand-text">Writing <em>Genie</em></span>
+      <p>Clearer sentences, in one rub of the lamp.</p>
+    </div>
+    <div class="footer-links">
+      <a href="#how">How it works</a>
+      <a href="#checks">What it checks</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <p class="footer-fine">
+      Writing Genie is a writing assistant, not an academic-integrity authority.
+      Use it to improve your own work — never to misrepresent someone else's.
+    </p>
+  </footer>
+
+  <div class="overlay hidden" id="overlay" role="status" aria-live="polite">
+    <div class="overlay-card">
+      <div class="overlay-lamp" aria-hidden="true">
+        <svg viewBox="0 0 48 48">
+          <path d="M31.5 27.5c4.8-.8 8.5 1.2 8.5 4.2 0 2.6-2.7 4.4-6.2 4.4h-2.2" fill="none" stroke="#F3A93B" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M7.5 28.8c0-4.4 4.7-7.6 12.2-7.6h6.9c7.1 0 12 3.2 12 7.6 0 3.2-2 5.4-4.7 6.4l-1.3 3.8H13.2l-1.3-3.8c-2.7-1-4.4-3.2-4.4-6.4Z" fill="#F3A93B"/>
+          <path d="M18.5 21.2c.2-3.3 2.2-5.4 5.4-5.4 3 0 5 2 5.2 5.2" fill="none" stroke="#F3A93B" stroke-width="2.6" stroke-linecap="round"/>
+        </svg>
+        <span class="smoke smoke-1"></span>
+        <span class="smoke smoke-2"></span>
+        <span class="smoke smoke-3"></span>
+      </div>
+      <h3 id="overlayTitle">Reading between the lines…</h3>
+      <p id="overlaySub">Checking phrasing, rhythm and source overlap.</p>
+      <div class="overlay-progress"><span id="overlayBar"></span></div>
+      <ul class="overlay-steps" id="overlaySteps"></ul>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
