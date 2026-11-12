@@ -3,13 +3,18 @@
   "functions": {
     "api/index.js": {
       "maxDuration": 60,
-      "memory": 1024
+      "memory": 1024,
+      "includeFiles": [
+        "node_modules/pdfkit/js/data/**",
+        "node_modules/unpdf/**",
+        "node_modules/pdfjs-dist/**"
+      ]
     }
   },
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/api/index"
+      "destination": "/api"
     }
   ]
 }
