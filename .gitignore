@@ -3,3 +3,7 @@ node_modules/
 *.log
 .vercel/
 .vercel
+
+# local secrets
+.vercel-token
+.env*.local
