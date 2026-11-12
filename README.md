@@ -20,7 +20,7 @@ Upload a Word document, PDF, or plain text. Writing Genie gives you:
 ## Quick start
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/writing-genie.git
+git clone https://github.com/Cheragshah/writing-genie.git
 cd writing-genie
 npm install
 npm start
@@ -36,9 +36,11 @@ On macOS you can also double-click `start.command`.
 
 ## Deploy on Vercel
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Cheragshah/writing-genie)
+
 The project is ready for Vercel's serverless runtime:
 
-1. Push the project to GitHub (see below).
+1. Push the project to GitHub (the repository is at [Cheragshah/writing-genie](https://github.com/Cheragshah/writing-genie)).
 2. Go to [vercel.com/new](https://vercel.com/new) and import the repository.
 3. Leave the framework preset as **Other** and the build command empty.
 4. Deploy. No environment variables are required.
@@ -47,16 +49,14 @@ The project is ready for Vercel's serverless runtime:
 
 ### Publish to GitHub
 
+The repository is already live at **https://github.com/Cheragshah/writing-genie**. To publish future changes:
+
 ```bash
 cd writing-genie
-git init -b main
 git add .
-git commit -m "Initial commit: Writing Genie"
-git remote add origin https://github.com/YOUR_USERNAME/writing-genie.git
-git push -u origin main
+git commit -m "Describe your change"
+git push
 ```
-
-Then import that repository on Vercel.
 
 ### Hosted vs local limits
 
