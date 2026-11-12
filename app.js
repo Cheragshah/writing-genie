@@ -743,6 +743,7 @@ app.post('/api/blob/upload', async (req, res, next) => {
         ],
         maximumSizeInBytes: 30 * 1024 * 1024,
         addRandomSuffix: true,
+        ttlDays: 1,
       }),
       onUploadCompleted: async () => {},
     });

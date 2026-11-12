@@ -126,7 +126,7 @@
         </div>
         <p class="micro">
           <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.2" y="7" width="9.6" height="6.4" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.4 7V5.4a2.6 2.6 0 0 1 5.2 0V7" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
-          Your draft is processed locally. No account needed.
+          Your draft is not saved. Large uploads are deleted after extraction.
         </p>
       </div>
 
@@ -400,7 +400,7 @@
         </details>
         <details>
           <summary>Where does my document go?</summary>
-          <p>Into a local Node server on this machine, which extracts the text and runs the analysis. Nothing is stored. Only short quoted phrases are sent to the public Wikipedia and OpenAlex APIs for source matching.</p>
+          <p>Locally, the file stays on your machine. On the hosted version it is sent to Vercel Blob, processed by the serverless function, and deleted immediately after extraction. Only short quoted phrases are sent to the public Wikipedia and OpenAlex APIs for source matching.</p>
         </details>
         <details>
           <summary>Will the clean-up change my meaning?</summary>
