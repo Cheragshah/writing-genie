@@ -24,16 +24,18 @@ const { buildDocx, buildPdf } = require('./lib/export');
 
 const app = express();
 const IS_VERCEL = Boolean(process.env.VERCEL);
+const BLOB_ENABLED = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 const SINGLE_PASS_CHARS = 60000;
 const CHUNK_CHARS = 58000;
-const MAX_DOC_CHARS = IS_VERCEL ? 300000 : 1000000;
+const MAX_DOC_CHARS = 1000000;
 const MAX_DIRECT_CHARS = IS_VERCEL ? MAX_DOC_CHARS : SINGLE_PASS_CHARS;
-const MAX_UPLOAD_MB = IS_VERCEL ? 4 : 12;
-const ONLINE_SAMPLE = 8;
+const MAX_DIRECT_UPLOAD_MB = IS_VERCEL ? 4 : 12;
+const MAX_UPLOAD_MB = IS_VERCEL ? (BLOB_ENABLED ? 25 : 4) : 12;
+const ONLINE_SAMPLE = IS_VERCEL ? 4 : 8;
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: MAX_UPLOAD_MB * 1024 * 1024, files: 1 },
+  limits: { fileSize: MAX_DIRECT_UPLOAD_MB * 1024 * 1024, files: 1 },
 });
 
 app.use(express.json({ limit: IS_VERCEL ? '4mb' : '6mb' }));
@@ -695,6 +697,8 @@ app.get('/api/config', (req, res) => {
     syncMaxChars: MAX_DIRECT_CHARS,
     passChars: SINGLE_PASS_CHARS,
     maxUploadMb: MAX_UPLOAD_MB,
+    maxDirectUploadMb: MAX_DIRECT_UPLOAD_MB,
+    blobUploads: BLOB_ENABLED,
     chunkedJobs: !IS_VERCEL,
     version: '1.3.0',
   });
@@ -705,7 +709,7 @@ app.post('/api/extract', (req, res, next) => {
     if (err) {
       const message =
         err.code === 'LIMIT_FILE_SIZE'
-          ? `That file is larger than ${MAX_UPLOAD_MB} MB.`
+          ? `That file is larger than ${MAX_DIRECT_UPLOAD_MB} MB.`
           : 'Upload failed. Try a smaller .docx, .pdf, or .txt file.';
       return res.status(400).json({ error: message });
     }
@@ -717,6 +721,83 @@ app.post('/api/extract', (req, res, next) => {
       next(e);
     }
   });
+});
+
+app.post('/api/blob/upload', async (req, res, next) => {
+  try {
+    if (!BLOB_ENABLED) {
+      throw httpError('Large uploads are not configured on this deployment.', 503);
+    }
+    const { handleUpload } = require('@vercel/blob/client');
+    const result = await handleUpload({
+      body: req.body,
+      request: req,
+      onBeforeGenerateToken: async () => ({
+        allowedContentTypes: [
+          'application/pdf',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'text/plain',
+          'text/markdown',
+          'application/rtf',
+          'application/octet-stream',
+        ],
+        maximumSizeInBytes: 30 * 1024 * 1024,
+        addRandomSuffix: true,
+      }),
+      onUploadCompleted: async () => {},
+    });
+    res.json(result);
+  } catch (error) {
+    next(error.status ? error : httpError(error.message || 'Large upload failed.', 400));
+  }
+});
+
+app.post('/api/extract-blob', async (req, res, next) => {
+  const { url, pathname, contentType } = req.body || {};
+  let token = null;
+  let del = null;
+
+  try {
+    if (!BLOB_ENABLED) {
+      throw httpError('Large uploads are not configured on this deployment.', 503);
+    }
+    if (typeof url !== 'string' || !url) {
+      throw httpError('The uploaded file URL is missing.', 400);
+    }
+
+    let parsed;
+    try {
+      parsed = new URL(url);
+    } catch {
+      throw httpError('The uploaded file URL is invalid.', 400);
+    }
+    if (!/(^|\.)blob\.vercel-storage\.com$/i.test(parsed.hostname)) {
+      throw httpError('That upload URL is not allowed.', 400);
+    }
+
+    const blobSdk = require('@vercel/blob');
+    token = process.env.BLOB_READ_WRITE_TOKEN;
+    del = blobSdk.del;
+
+    const blob = await blobSdk.get(url, { access: 'private', token });
+    if (!blob || blob.statusCode !== 200 || !blob.stream) {
+      throw httpError('That uploaded file could not be found. Try uploading it again.', 404);
+    }
+
+    const buffer = Buffer.from(await new Response(blob.stream).arrayBuffer());
+    const result = await extractText({
+      buffer,
+      originalname: typeof pathname === 'string' ? pathname : 'upload',
+      mimetype: typeof contentType === 'string' ? contentType : '',
+    });
+    res.json(result);
+  } catch (error) {
+    next(error);
+  } finally {
+    if (token && typeof url === 'string' && del) {
+      del(url, { token }).catch(() => {});
+    }
+  }
 });
 
 app.post('/api/analyze', async (req, res, next) => {

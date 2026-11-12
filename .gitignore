@@ -7,3 +7,4 @@ node_modules/
 # local secrets
 .vercel-token
 .env*.local
+.env*

@@ -183,6 +183,8 @@ const APP_CONFIG = {
   maxChars: 1000000,
   passChars: 60000,
   maxUploadMb: 12,
+  maxDirectUploadMb: 12,
+  blobUploads: false,
   chunkedJobs: true,
 };
 let configLoaded = false;
@@ -438,6 +440,14 @@ function clearFile() {
   el.fileChip.classList.add('hidden');
 }
 
+function applyExtractedDocument(data, file) {
+  state.text = data.text;
+  state.filename = data.filename || file.name;
+  state.structure = Array.isArray(data.structure) ? data.structure : [];
+  const words = countWords(data.text);
+  toast(`Got it. ${words.toLocaleString()} words ready to check.`);
+}
+
 async function handleFile(file) {
   if (!file) return;
   await ensureConfig();
@@ -458,22 +468,73 @@ async function handleFile(file) {
   showFileChip(file);
   el.checkBtnLabel.textContent = 'Check my writing';
 
+  const useBlob =
+    APP_CONFIG.hosted &&
+    APP_CONFIG.blobUploads &&
+    file.size > 3.5 * 1024 * 1024;
+
   try {
-    const form = new FormData();
-    form.append('file', file);
-    const data = await withOverlay(
-      {
-        title: 'Opening your document…',
-        sub: 'Pulling out the words and leaving the formatting behind.',
-        steps: ['Opening the file', 'Extracting readable text', 'Tidying line breaks'],
-      },
-      () => requestJson('/api/extract', { method: 'POST', body: form })
-    );
-    state.text = data.text;
-    state.filename = data.filename || file.name;
-    state.structure = Array.isArray(data.structure) ? data.structure : [];
-    const words = countWords(data.text);
-    toast(`Got it. ${words.toLocaleString()} words ready to check.`);
+    let data;
+
+    if (useBlob) {
+      if (typeof window.WritingGenieBlobUpload !== 'function') {
+        throw new Error('The large-file uploader did not load. Refresh and try again.');
+      }
+
+      showOverlay(
+        {
+          title: 'Uploading your document…',
+          sub: 'Sending it directly to secure storage so the size limit does not apply.',
+          steps: ['Uploading the file', 'Extracting readable text', 'Tidying the structure'],
+        },
+        true
+      );
+
+      try {
+        const blob = await window.WritingGenieBlobUpload(file.name, file, {
+          access: 'private',
+          handleUploadUrl: '/api/blob/upload',
+          multipart: file.size > 8 * 1024 * 1024,
+          onUploadProgress: ({ percentage }) => {
+            updateOverlayProgress({
+              percent: Math.min(72, 4 + percentage * 0.68),
+              sub: `Uploading file: ${Math.round(percentage)}%`,
+            });
+          },
+        });
+
+        updateOverlayProgress({
+          percent: 82,
+          title: 'Reading your document…',
+          sub: 'Pulling out the words and keeping the heading structure.',
+        });
+
+        data = await requestJson('/api/extract-blob', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            url: blob.url,
+            pathname: blob.pathname || file.name,
+            contentType: file.type || 'application/octet-stream',
+          }),
+        });
+      } finally {
+        hideOverlay();
+      }
+    } else {
+      const form = new FormData();
+      form.append('file', file);
+      data = await withOverlay(
+        {
+          title: 'Opening your document…',
+          sub: 'Pulling out the words and leaving the formatting behind.',
+          steps: ['Opening the file', 'Extracting readable text', 'Tidying line breaks'],
+        },
+        () => requestJson('/api/extract', { method: 'POST', body: form })
+      );
+    }
+
+    applyExtractedDocument(data, file);
   } catch (error) {
     clearFile();
     toast(error.message);

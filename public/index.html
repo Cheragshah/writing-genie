@@ -416,7 +416,7 @@
         </details>
         <details>
           <summary>Is there still a document size limit?</summary>
-          <p>Locally: 1,000,000 characters and 12 MB per file. On the hosted Vercel demo: 300,000 characters and 4 MB per file, so processing stays inside serverless request limits. Everything beyond the first 60,000 characters goes through the chunked pipeline automatically.</p>
+          <p>Up to 1,000,000 characters and 25 MB per file on the hosted demo (12 MB locally). Large files upload directly to Vercel Blob, so the usual 4 MB serverless request limit does not apply. Documents beyond 60,000 characters are processed in parts automatically.</p>
         </details>
       </div>
     </section>
@@ -459,6 +459,7 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+  <script src="/blob-client.js"></script>
   <script src="/app.js"></script>
 </body>
 </html>

@@ -6,7 +6,8 @@
   "scripts": {
     "test": "node --check app.js && node --check lib/ai-detector.js && node --check lib/plagiarism.js && node --check lib/humanizer.js && node --check lib/structure.js && node --check lib/export.js && node --check lib/file-extract.js",
     "start": "node dev-server.js",
-    "dev": "node dev-server.js"
+    "dev": "node dev-server.js",
+    "build:client": "esbuild client-src/blob-client.js --bundle --minify --format=iife --outfile=public/blob-client.js"
   },
   "keywords": [
     "ai-detection",
@@ -19,6 +20,7 @@
   "license": "MIT",
   "type": "commonjs",
   "dependencies": {
+    "@vercel/blob": "^2.9.0",
     "docx": "^9.15.3",
     "express": "^5.3.0",
     "mammoth": "^1.13.0",
@@ -28,5 +30,8 @@
   },
   "engines": {
     "node": "26.x"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
   }
 }

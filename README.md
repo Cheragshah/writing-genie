@@ -42,8 +42,14 @@ The project is ready for Vercel's serverless runtime:
 
 1. Push the project to GitHub (the repository is at [Cheragshah/writing-genie](https://github.com/Cheragshah/writing-genie)).
 2. Go to [vercel.com/new](https://vercel.com/new) and import the repository.
-3. Leave the framework preset as **Other** and the build command empty.
-4. Deploy. No environment variables are required.
+3. Create a Vercel Blob store and connect it to the project:
+   ```bash
+   npx vercel storage create writing-genie-uploads --type blob --access private
+   npx vercel storage connect writing-genie-uploads --yes
+   npx vercel storage update writing-genie-uploads --auth oidc --add-rw-token --yes
+   ```
+4. Deploy. The Blob connection supplies `BLOB_READ_WRITE_TOKEN`, which lets files over 4 MB upload directly from the browser and bypass the serverless request body limit.
+5. Leave the framework preset as **Express** (Vercel detects it) and the build command empty.
 
 `vercel.json` routes every request through the Express app in `api/index.js` and sets a 60-second function duration. Vercel sets `VERCEL=1` automatically; the app then switches to synchronous chunked processing because serverless instances cannot keep background jobs alive.
 
@@ -62,8 +68,8 @@ git push
 
 | | Local | Vercel |
 |---|---|---|
-| Document size | 1,000,000 chars | 300,000 chars |
-| Upload size | 12 MB | 4 MB |
+| Document size | 1,000,000 chars | 1,000,000 chars |
+| Upload size | 12 MB | 25 MB via Vercel Blob |
 | Long documents | Background jobs with live per-part progress | Synchronous chunked processing |
 | PDF extraction | Pure JS (`unpdf`) | Pure JS (`unpdf`) |
 
@@ -145,6 +151,8 @@ public/                 Front end (no build step)
 ```text
 GET  /api/config                 Deployment limits and mode
 POST /api/extract                Multipart file upload → text + structure
+POST /api/blob/upload            Vercel Blob client-upload token
+POST /api/extract-blob           Download a Blob, extract text, delete the Blob
 POST /api/analyze                Analyze text (chunks automatically when needed)
 POST /api/humanize               Clean text and re-analyze
 POST /api/export/docx            Formatted Word download
@@ -167,6 +175,7 @@ This runs syntax checks across the server and library modules.
 
 - AI detectors disagree with each other and produce false positives. Writing Genie estimates style; it cannot guarantee any particular detector result.
 - The reference scan covers public sources only; a full web index needs a commercial plagiarism API.
+- Hosted uploads over 4 MB use Vercel Blob, so the deployment needs a connected Blob store. Without one, the hosted limit falls back to 4 MB.
 - Public APIs occasionally rate-limit. The app falls back to the offline quotation/repetition scan.
 - Direct quotations are intentionally preserved during clean-up. Cite them.
 - Complex layouts (multiple columns, tables, images, custom fonts) are not reproduced in the formatted exports.
