@@ -4,7 +4,7 @@
     "app.js": {
       "maxDuration": 60,
       "memory": 1024,
-      "includeFiles": "node_modules/{pdfkit/js/data,unpdf,pdfjs-dist}/**"
+      "includeFiles": "node_modules/{pdfkit,unpdf,pdfjs-dist}/**"
     }
   }
 }
