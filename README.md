@@ -28,7 +28,7 @@ npm start
 
 Open **http://localhost:4173**.
 
-Requirements: **Node.js 20+**. There are no API keys and no native binaries to install — PDF extraction uses the pure-JavaScript `unpdf` package.
+Requirements: **Node.js 26+** (the runtime Vercel currently uses). There are no API keys and no native binaries to install — PDF extraction uses the pure-JavaScript `unpdf` package.
 
 On macOS you can also double-click `start.command`.
 
@@ -126,9 +126,8 @@ Downloads:
 
 ```text
 app.js                  Express app (routes, chunking, merging, jobs)
-server.js               Local listener
-api/index.js            Vercel serverless entry point
-vercel.json             Vercel routing and function settings
+dev-server.js           Local listener
+vercel.json             Vercel function settings
 
 lib/ai-detector.js      Explainable AI-style scoring
 lib/plagiarism.js       Wikipedia / OpenAlex / quotation / repetition scan

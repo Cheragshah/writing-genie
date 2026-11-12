@@ -5,8 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "node --check app.js && node --check lib/ai-detector.js && node --check lib/plagiarism.js && node --check lib/humanizer.js && node --check lib/structure.js && node --check lib/export.js && node --check lib/file-extract.js",
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node dev-server.js",
+    "dev": "node dev-server.js"
   },
   "keywords": [
     "ai-detection",
@@ -27,6 +27,6 @@
     "unpdf": "^2.1.0"
   },
   "engines": {
-    "node": "20.x"
+    "node": "26.x"
   }
 }

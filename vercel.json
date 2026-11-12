@@ -1,16 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
-    "api/index.js": {
+    "app.js": {
       "maxDuration": 60,
       "memory": 1024,
       "includeFiles": "node_modules/{pdfkit/js/data,unpdf,pdfjs-dist}/**"
     }
-  },
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api"
-    }
-  ]
+  }
 }
