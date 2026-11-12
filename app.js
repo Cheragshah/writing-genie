@@ -14,6 +14,7 @@ const {
   readability,
   stdDev,
   clamp,
+  stripAiArtifacts,
 } = require('./lib/text-utils');
 const { analyzeAI } = require('./lib/ai-detector');
 const { analyzePlagiarism, scanPublicSources } = require('./lib/plagiarism');
@@ -38,12 +39,22 @@ const upload = multer({
 app.use(express.json({ limit: IS_VERCEL ? '4mb' : '6mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Explicit fallbacks keep the page working even where a platform does not
+// apply express.static (Vercel serves public/ from its CDN first).
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+app.get(['/styles.css', '/app.js', '/favicon.svg'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', req.path));
+});
+
 function prepareText(raw) {
   let text = normalizeText(raw);
   text = unwrapHardLines(text);
   // Normalise block boundaries so headings and paragraphs survive rewriting.
   const structure = detectStructure(text);
-  return structure.length ? structureToText(structure) : text;
+  const normalized = structure.length ? structureToText(structure) : text;
+  return stripAiArtifacts(normalized);
 }
 
 function httpError(message, status) {
@@ -662,12 +673,14 @@ async function runJob(job) {
   }
 }
 
-setInterval(() => {
-  const cutoff = Date.now() - 60 * 60 * 1000;
-  for (const [id, job] of jobs.entries()) {
-    if (job.createdAt < cutoff) jobs.delete(id);
-  }
-}, 10 * 60 * 1000).unref();
+if (!IS_VERCEL) {
+  setInterval(() => {
+    const cutoff = Date.now() - 60 * 60 * 1000;
+    for (const [id, job] of jobs.entries()) {
+      if (job.createdAt < cutoff) jobs.delete(id);
+    }
+  }, 10 * 60 * 1000).unref();
+}
 
 /* ---------------- routes ---------------- */
 

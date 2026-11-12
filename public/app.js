@@ -1,7 +1,7 @@
 'use strict';
 
 /* ============================================================
-   Writing Genie — client
+   Writing Genie client
    ============================================================ */
 
 const $ = (sel) => document.querySelector(sel);
@@ -10,7 +10,7 @@ const $$ = (sel) => [...document.querySelectorAll(sel)];
 const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const CIRCUMFERENCE = 2 * Math.PI * 58;
 
-const SAMPLE_TEXT = `In today's fast-paced business world, it is important to note that effective leadership has become a pivotal factor in organizational success. Furthermore, modern leaders must leverage a myriad of strategies to navigate an ever-evolving landscape of challenges. Moreover, comprehensive communication and robust decision-making are crucial for fostering trust within diverse teams. Additionally, leaders should utilize data-driven insights to facilitate informed choices and ensure sustainable growth. As John F. Kennedy famously said, "Ask not what your country can do for you, ask what you can do for your country." In conclusion, leadership is not merely about authority — it is a transformative commitment that underscores the importance of service, empathy, and vision.`;
+const SAMPLE_TEXT = `In today's fast-paced business world, it is important to note that effective leadership has become a pivotal factor in organizational success. Furthermore, modern leaders must leverage a myriad of strategies to navigate an ever-evolving landscape of challenges. Moreover, comprehensive communication and robust decision-making are crucial for fostering trust within diverse teams. Additionally, leaders should utilize data-driven insights to facilitate informed choices and ensure sustainable growth. As John F. Kennedy famously said, "Ask not what your country can do for you, ask what you can do for your country." In conclusion, leadership is not merely about authority. It is a transformative commitment that underscores the importance of service, empathy, and vision.`;
 
 const state = {
   mode: 'upload',
@@ -299,7 +299,7 @@ async function requestAnalysis(text, filename) {
   if (!APP_CONFIG.chunkedJobs) {
     return withOverlay(
       {
-        title: 'Long document — processing it in parts…',
+        title: 'Long document. Processing it in parts…',
         sub: 'Each part is read separately, then merged into one report. This can take a little while.',
         steps: LARGE_STEPS,
       },
@@ -316,7 +316,7 @@ async function requestAnalysis(text, filename) {
     'analyze',
     { text, filename },
     {
-      title: 'Long document — splitting it into parts…',
+      title: 'Long document. Splitting it into parts…',
       sub: 'Each part is read separately, then the results are merged.',
       steps: LARGE_STEPS,
     },
@@ -361,7 +361,7 @@ async function requestCleanup(data) {
   if (!APP_CONFIG.chunkedJobs) {
     return withOverlay(
       {
-        title: 'Long document — cleaning it in parts…',
+        title: 'Long document. Cleaning it in parts…',
         sub: 'Rewriting each part, then re-checking the whole draft. This can take a little while.',
         steps: [
           'Rewriting each part',
@@ -383,7 +383,7 @@ async function requestCleanup(data) {
     'humanize',
     payload,
     {
-      title: 'Long document — cleaning it in parts…',
+      title: 'Long document. Cleaning it in parts…',
       sub: 'Rewriting each part, then re-checking the whole draft.',
       steps: [
         'Rewriting each part',
@@ -473,7 +473,7 @@ async function handleFile(file) {
     state.filename = data.filename || file.name;
     state.structure = Array.isArray(data.structure) ? data.structure : [];
     const words = countWords(data.text);
-    toast(`Got it — ${words.toLocaleString()} words ready to check.`);
+    toast(`Got it. ${words.toLocaleString()} words ready to check.`);
   } catch (error) {
     clearFile();
     toast(error.message);
@@ -554,7 +554,7 @@ async function analyze() {
     return;
   }
   if (text.replace(/\s/g, '').length < 40) {
-    toast('Add a little more text — at least a couple of sentences.');
+    toast('Add a little more text. At least a couple of sentences.');
     return;
   }
   if (text.length > APP_CONFIG.maxChars) {
@@ -726,7 +726,7 @@ function renderInsight(aiIndex, plagIndex, data) {
     if (match) {
       pieces.push({
         title: 'Matched source',
-        body: `“${match.source.title}” shares ${match.similarity}% of this sentence — ${match.matchedWords} words. ${
+        body: `“${match.source.title}” shares ${match.similarity}% of this sentence, ${match.matchedWords} words. ${
           match.source.url ? 'Open the source and add a citation, or paraphrase the idea in your own words.' : 'This is repeated elsewhere in your document.'
         }`,
       });
@@ -873,7 +873,7 @@ function renderTextView(data, forceAll = false) {
     view.innerHTML = renderAnnotated(preview, data.ai, data.plagiarism);
     const parts = data.parts || 1;
     $('#renderMoreText').textContent =
-      `Large document — showing the first ${RENDER_PREVIEW_LIMIT.toLocaleString()} of ` +
+      `Large document. Showing the first ${RENDER_PREVIEW_LIMIT.toLocaleString()} of ` +
       `${data.text.length.toLocaleString()} characters. Scores cover all ${parts} part${parts === 1 ? '' : 's'}.`;
     more.classList.remove('hidden');
   } else {
@@ -897,7 +897,7 @@ function renderReport(data) {
   $('#aiFootnote').textContent =
     ai.confidence === 'low'
       ? 'Short sample: treat this as a rough signal, not a verdict.'
-      : 'Style-only estimate. Detectors disagree — use this as a second opinion.';
+      : 'Style-only estimate. Detectors disagree. Use this as a second opinion.';
   setGauge($('#aiGauge'), $('#aiScore'), ai.score, 'ai');
 
   const plagTone = scoreTone(plag.score, 'plag');
@@ -1071,11 +1071,11 @@ function renderCleaned(before, result) {
   if (plagDelta > 0) {
     $('#plagDelta').textContent = `Down ${plagDelta} points after clean-up`;
   } else if (plagDelta === 0) {
-    $('#plagDelta').textContent = before.plagiarism.score === 0 ? 'No source overlap found' : 'Unchanged — check the remaining match';
+    $('#plagDelta').textContent = before.plagiarism.score === 0 ? 'No source overlap found' : 'Unchanged. Check the remaining match';
   } else if (quoteRemains) {
-    $('#plagDelta').textContent = 'Direct quotation preserved — add a citation (the score reflects it)';
+    $('#plagDelta').textContent = 'Direct quotation preserved. Add a citation (the score reflects it)';
   } else {
-    $('#plagDelta').textContent = `Slightly higher (${Math.abs(plagDelta)} pt) — a close match remains`;
+    $('#plagDelta').textContent = `Slightly higher (${Math.abs(plagDelta)} pt). A close match remains`;
   }
 
   $('#aiAfter').classList.toggle('warn', aiDelta < 0);
@@ -1083,8 +1083,8 @@ function renderCleaned(before, result) {
 
   const changes = $('#changes');
   changes.innerHTML = '';
-  const labels = result.changes?.length ? [...result.changes] : ['This draft was already reading cleanly — only light touch-ups were needed.'];
-  if (quoteRemains) labels.push('Direct quotation preserved — cite the original source');
+  const labels = result.changes?.length ? [...result.changes] : ['This draft was already reading cleanly. Only light touch-ups were needed.'];
+  if (quoteRemains) labels.push('Direct quotation preserved. Cite the original source');
   for (const label of labels) {
     const li = document.createElement('li');
     li.textContent = label;
@@ -1106,7 +1106,7 @@ function renderCleaned(before, result) {
   if (result.plagiarism.matches.some((m) => m.source.kind === 'quotation')) {
     reviewItems.push('A direct quotation remains. Quoted words should be cited, not paraphrased.');
   }
-  reviewItems.push('Give it one final read for tone and accuracy — the rewrite should not change your argument.');
+  reviewItems.push('Give it one final read for tone and accuracy. The rewrite should not change your argument.');
   for (const item of reviewItems) {
     const li = document.createElement('li');
     li.textContent = item;
